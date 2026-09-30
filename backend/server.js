@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const pool = require("./config/db");
 const alertRoutes = require("./routes/alertRoutes");
+const startEarthquakeJob = require("./jobs/earthquakeJob");
 const PORT = 5000;
 app.use(express.json());
 app.use("/api/alerts", alertRoutes);
@@ -15,10 +16,11 @@ app.get("/api/health", (req, res) => {
   res.json({
     success: true,
     message: "Disaster Watch backend is healthy",
-  });
+  }); 
 });
 
 app.use(errorHandler);                          
 app.listen(PORT, () => {
   console.log(`Backend is running on http://localhost:${PORT}`);
+    startEarthquakeJob();
 });

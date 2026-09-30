@@ -6,7 +6,7 @@ const {
 } = require("../services/alertService");
 
 const allowedSeverities = ["Low", "Medium", "High", "Critical"];
-
+    
 const isValidDate = (value) =>
   typeof value === "string" &&
   value.trim() !== "" &&
