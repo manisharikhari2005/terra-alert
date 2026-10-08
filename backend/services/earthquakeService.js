@@ -1,7 +1,8 @@
-const pool = require("../config/db");
+import pool from "../config/db.js";
 
 const USGS_API_URL =
   "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson";
+
 const getEarthquakeSeverity = (magnitude) => {
   if (magnitude === null || magnitude === undefined) {
     return "Low";
@@ -27,7 +28,34 @@ const fetchEarthquakes = async () => {
 
   const data = await response.json();
 
+  if (!Array.isArray(data.features)) {
+    throw new Error("Invalid earthquake data received from USGS");
+  }
+
   return data.features;
+};
+
+const normalizeEarthquake = (feature) => {
+  const { properties, geometry, id } = feature;
+
+  if (!properties || !geometry?.coordinates) {
+    throw new Error("Invalid earthquake feature received from USGS");
+  }
+
+  const [longitude, latitude, depth] = geometry.coordinates;
+
+  return {
+    externalId: id,
+    type: "Earthquake",
+    location: properties.place,
+    magnitude: properties.mag,
+    latitude,
+    longitude,
+    depth,
+    occurredAt: new Date(properties.time).toISOString(),
+    source: "USGS",
+    eventData: feature,
+  };
 };
 
 const getNormalizedEarthquakes = async () => {
@@ -87,7 +115,7 @@ const saveEarthquakes = async () => {
         earthquake.type,
         earthquake.location,
         getEarthquakeSeverity(earthquake.magnitude),
-        earthquake.location,
+        `Magnitude ${earthquake.magnitude ?? "Unknown"}`,
         earthquake.latitude,
         earthquake.longitude,
         earthquake.source,
@@ -111,25 +139,7 @@ const saveEarthquakes = async () => {
   return { inserted, updated, unchanged };
 };
 
-const normalizeEarthquake = (feature) => {
-  const { properties, geometry, id } = feature;
-  const [longitude, latitude, depth] = geometry.coordinates;
-
-  return {
-    externalId: id,
-    type: "Earthquake",
-    location: properties.place,
-    magnitude: properties.mag,
-    latitude,
-    longitude,
-    depth,
-    occurredAt: new Date(properties.time).toISOString(),
-    source: "USGS",
-    eventData: feature,
-  };
-};
-
-module.exports = {
+export {
   fetchEarthquakes,
   normalizeEarthquake,
   getNormalizedEarthquakes,

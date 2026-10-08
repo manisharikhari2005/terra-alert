@@ -30,7 +30,7 @@ export default function AppShell({ children }) {
         />
       )}
 
-      <div className="min-w-0 flex-1 pt-14 lg:pt-0">{children}</div>
+      <div className="min-w-0 flex-1 pt-14 lg:ml-62 lg:pt-0">{children}</div>
     </div>
   );
 }

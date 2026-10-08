@@ -1,5 +1,5 @@
-const cron = require("node-cron");
-const { saveEarthquakes } = require("../services/earthquakeService");
+import cron from "node-cron";
+import { saveEarthquakes } from "../services/earthquakeService.js";
 
 const startEarthquakeJob = () => {
   cron.schedule("*/5 * * * *", async () => {
@@ -20,4 +20,4 @@ const startEarthquakeJob = () => {
   console.log("Earthquake job scheduled: every 5 minutes");
 };
 
-module.exports = startEarthquakeJob;
+export default startEarthquakeJob;

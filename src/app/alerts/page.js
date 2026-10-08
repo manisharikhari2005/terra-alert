@@ -26,7 +26,7 @@ export default function AlertsPage() {
           Monitor and review active disaster alerts.
         </p>
 
-        <div className="mt-6 rounded-2xl border border-(--border) bg-(--surface) p-5">
+        <div className="mt-6 rounded-2xl border border-(--border) bg-(--surface) p-5 transition-all duration-300 hover:border-(--accent)/40">
           <div>
             <label className="mb-2 block text-sm font-medium text-(--foreground)">
               Search

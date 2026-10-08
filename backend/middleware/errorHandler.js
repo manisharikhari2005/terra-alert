@@ -1,8 +1,6 @@
-// module.exports = errorHandler;
 const errorHandler = (err, req, res, next) => {
   console.error(err);
 
-  // Invalid JSON error
   if (err.type === "entity.parse.failed") {
     return res.status(400).json({
       success: false,
@@ -10,11 +8,10 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Other unexpected errors
   res.status(500).json({
     success: false,
     message: "Internal Server Error",
   });
 };
 
-module.exports = errorHandler;
+export default errorHandler;

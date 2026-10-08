@@ -1,6 +1,9 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+import pg from "pg";
 
-const { Pool } = require("pg");
+dotenv.config();
+
+const { Pool } = pg;
 
 const pool = new Pool({
   host: "localhost",
@@ -12,12 +15,12 @@ const pool = new Pool({
 
 pool
   .query("SELECT NOW()")
-  .then((result) => {
+  .then(({ rows }) => {
     console.log("Database connected successfully!");
-    console.log("Database time:", result.rows[0].now);
+    console.log("Database time:", rows[0].now);
   })
   .catch((error) => {
     console.error("Database connection failed:", error.message);
-  }); 
+  });
 
-module.exports = pool;
+export default pool;

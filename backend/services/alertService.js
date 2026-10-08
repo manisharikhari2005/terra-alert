@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+import pool from "../config/db.js";
 
 const getAllAlerts = async (filters) => {
   const { severity, type, location } = filters;
@@ -20,8 +20,11 @@ const getAllAlerts = async (filters) => {
     values.push(`%${location}%`);
     query += ` AND location ILIKE $${values.length}`;
   }
+  
+  query += " ORDER BY occurred_at DESC";
 
   const result = await pool.query(query, values);
+
   return result.rows;
 };
 
@@ -52,8 +55,12 @@ const updateAlert = async (id, alertData) => {
   };
 
   const updates = Object.entries(allowedFields).filter(
-    ([key, value]) => value !== undefined,
+    ([, value]) => value !== undefined,
   );
+
+  if (updates.length === 0) {
+    return null;
+  }
 
   const values = [];
 
@@ -84,10 +91,9 @@ const deleteAlert = async (id) => {
 
   return result.rows[0] || null;
 };
+const getAlertById = async (id) => {
+  const result = await pool.query("SELECT * FROM alerts WHERE id = $1", [id]);
 
-module.exports = {
-  getAllAlerts,
-  createAlert,
-  updateAlert,
-  deleteAlert,
+  return result.rows[0] || null;
 };
+export { getAllAlerts, getAlertById, createAlert, updateAlert, deleteAlert };

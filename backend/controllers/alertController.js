@@ -1,12 +1,13 @@
-const {
+import {
   getAllAlerts,
+  getAlertById,
   createAlert,
   updateAlert,
   deleteAlert,
-} = require("../services/alertService");
+} from "../services/alertService.js";
 
 const allowedSeverities = ["Low", "Medium", "High", "Critical"];
-    
+
 const isValidDate = (value) =>
   typeof value === "string" &&
   value.trim() !== "" &&
@@ -23,6 +24,34 @@ const getAlerts = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: alerts,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+const getAlert = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!/^\d+$/.test(id) || Number(id) < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid alert ID",
+      });
+    }
+
+    const alert = await getAlertById(id);
+
+    if (!alert) {
+      return res.status(404).json({
+        success: false,
+        message: "Alert not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: alert,
     });
   } catch (error) {
     next(error);
@@ -100,7 +129,7 @@ const patchAlert = async (req, res, next) => {
     };
 
     const updates = Object.entries(allowedFields).filter(
-      ([key, value]) => value !== undefined,
+      ([, value]) => value !== undefined,
     );
 
     if (updates.length === 0) {
@@ -202,9 +231,4 @@ const removeAlert = async (req, res, next) => {
   }
 };
 
-module.exports = {
-  getAlerts,
-  postAlert,
-  patchAlert,
-  removeAlert,
-};
+export { getAlerts, getAlert, postAlert, patchAlert, removeAlert };

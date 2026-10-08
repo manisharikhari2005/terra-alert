@@ -17,21 +17,21 @@ export default function AlertDetails({
   }
 
   return (
-    <div className="rounded-2xl border border-(--border) bg-(--surface) p-4 sm:p-6">
+    <div className="rounded-2xl border border-(--border) bg-(--surface) p-4 transition-all duration-300 hover:border-(--accent)/40 sm:p-6">
       {/* Status */}
       <div className="flex flex-col gap-3 border-b border-(--border) pb-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-medium uppercase tracking-[0.15em] text-(--muted-foreground)">
             Alert Status
-          </p>    
+          </p>
 
           <div className="mt-2 flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-(--alert-red)" />
+            <span className="h-2 w-2 rounded-full bg-(--alert-red) animate-pulse" />
 
             <span className="text-sm font-medium text-(--alert-red)">
               ACTIVE ALERT
             </span>
-          </div> 
+          </div>
         </div>
 
         <span className={`text-sm font-medium ${severityColor}`}>
@@ -49,7 +49,7 @@ export default function AlertDetails({
           <h2 className="mt-2 text-xl font-semibold text-(--foreground) sm:text-2xl">
             {type}
           </h2>
-        </div> 
+        </div>
 
         <div>
           <p className="text-xs uppercase tracking-wide text-(--muted-foreground)">

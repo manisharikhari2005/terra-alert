@@ -1,21 +1,49 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import AlertCard from "./AlertCard";
-import { alerts } from "@/data/alerts";
 
 export default function AlertList({ type, severity, search, clearFilters }) {
-  const filteredAlerts = alerts.filter((alert) => {
-    const typeMatch = !type || type === "All Types" || alert.type === type;
+  const [alerts, setAlerts] = useState([]);
 
-    const severityMatch =
-      !severity || severity === "All Severities" || alert.severity === severity;
+ useEffect(() => {
+   const fetchAlerts = async () => {
+     try {
+       const params = new URLSearchParams();
 
-    const searchMatch =
-      !search ||
-      alert.type.toLowerCase().includes(search.toLowerCase()) ||
-      alert.location.toLowerCase().includes(search.toLowerCase()) ||
-      alert.details.toLowerCase().includes(search.toLowerCase());
+       if (type && type !== "All Types") {
+         params.set("type", type);
+       }
 
-    return typeMatch && severityMatch && searchMatch;
-  });
+       if (severity && severity !== "All Severities") {
+         params.set("severity", severity);
+       }
+       if (search) {
+         params.set("location", search);
+       }
+
+       const query = params.toString();
+
+       const response = await fetch(
+         `http://localhost:5000/api/alerts${query ? `?${query}` : ""}`,
+       );
+
+       if (!response.ok) {
+         throw new Error("Failed to fetch alerts");
+       }
+
+       const result = await response.json();
+
+       setAlerts(result.data);
+     } catch (error) {
+       console.error("Failed to fetch alerts:", error);
+     }
+   };
+
+   fetchAlerts();
+ }, [type, severity, search]);
+
+const filteredAlerts = alerts;
 
   if (filteredAlerts.length === 0) {
     return (
@@ -27,6 +55,7 @@ export default function AlertList({ type, severity, search, clearFilters }) {
         <p className="mt-2 text-sm text-(--muted-foreground)">
           Try changing the filters to see more alerts.
         </p>
+
         <button
           onClick={clearFilters}
           className="mt-4 rounded-lg bg-(--accent) px-4 py-2 text-sm font-medium text-white transition hover:bg-(--accent-hover)"
@@ -43,6 +72,7 @@ export default function AlertList({ type, severity, search, clearFilters }) {
         {filteredAlerts.length}{" "}
         {filteredAlerts.length === 1 ? "alert" : "alerts"} found
       </p>
+
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {filteredAlerts.map((alert) => (
           <AlertCard
@@ -52,7 +82,7 @@ export default function AlertList({ type, severity, search, clearFilters }) {
             location={alert.location}
             details={alert.details}
             severity={alert.severity}
-            time={alert.time}
+            time={alert.occurred_at}
           />
         ))}
       </div>
