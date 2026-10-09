@@ -8,49 +8,65 @@ export default function FilterBar({
   clearFilters,
 }) {
   return (
-    <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-end sm:gap-6">
-      <div>
-        <h2 className="pb-2 text-sm font-medium text-(--foreground)">
-          Filters
-        </h2>
+    <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:gap-6">
+      {/* Filter Heading */}
+      <div className="shrink-0">
+        <h2 className="text-sm font-medium text-(--foreground)">Filters</h2>
       </div>
 
-      <div>
-        <label className="text-sm text-(--muted-foreground)">
-          Disaster Type
-        </label>
+      {/* Dropdowns */}
+      <div className="grid w-full min-w-0 grid-cols-2 gap-2 sm:w-auto sm:gap-4">
+        {/* Disaster Type */}
+        <div className="min-w-0">
+          <label
+            htmlFor="disaster-type"
+            className="text-xs text-(--muted-foreground) sm:text-sm"
+          >
+            Disaster Type
+          </label>
 
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          className="mt-2 w-full rounded-lg border border-(--border) bg-(--surface-elevated) px-3 py-2 text-sm text-(--foreground) outline-none focus:border-(--accent) sm:min-w-40"
-        >
-          <option>All Types</option>
-          <option>Earthquake</option>
-          <option>Flood</option>
-          <option>Wildfire</option>
-        </select>
+          <select
+            id="disaster-type"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className="mt-1 block w-[110px] min-w-0 max-w-full rounded-lg border border-(--border) bg-(--surface-elevated) px-1.5 py-2 text-[11px] text-(--foreground) outline-none transition-colors hover:border-(--accent) focus:border-(--accent) sm:mt-2 sm:min-w-40 sm:px-3 sm:text-sm"
+          >
+            <option>All Types</option>
+            <option>Earthquake</option>
+            <option>Flood</option>
+            <option>Wildfire</option>
+          </select>
+        </div>
+
+        {/* Severity */}
+        <div className="min-w-0">
+          <label
+            htmlFor="alert-severity"
+            className="text-xs text-(--muted-foreground) sm:text-sm"
+          >
+            Severity
+          </label>
+
+          <select
+            id="alert-severity"
+            value={severity}
+            onChange={(e) => setSeverity(e.target.value)}
+            className="mt-1 block w-[115px] min-w-0 max-w-full rounded-lg border border-(--border) bg-(--surface-elevated) px-1.5 py-2 text-[11px] text-(--foreground) outline-none transition-colors hover:border-(--accent) focus:border-(--accent) sm:mt-2 sm:min-w-40 sm:px-3 sm:text-sm "
+          >
+            <option>All Severities</option>
+            <option>High</option>
+            <option>Medium</option>
+            <option>Low</option>
+          </select>
+        </div>
       </div>
 
-      <div>
-        <label className="text-sm text-(--muted-foreground)">Severity</label>
-
-        <select
-          value={severity}
-          onChange={(e) => setSeverity(e.target.value)}
-          className="mt-2 w-full rounded-lg border border-(--border) bg-(--surface-elevated) px-3 py-2 text-sm text-(--foreground) outline-none focus:border-(--accent) sm:min-w-40"
-        >
-          <option>All Severities</option>
-          <option>High</option>
-          <option>Medium</option>
-          <option>Low</option>
-        </select>
-      </div>
-
+      {/* Clear Filters */}
       <button
+        type="button"
         onClick={clearFilters}
-        className="rounded-lg border border-(--border) px-4 py-2 text-sm text-(--muted-foreground) transition hover:border-(--accent) hover:text-(--foreground)"
-      >
+        className="self-start rounded-lg border border-(--border) px-3 py-2 text-xs text-(--muted-foreground) transition-colors duration-200 hover:border-(--accent) hover:bg-(--accent) hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent) sm:ml-auto sm:self-end sm:px-4 sm:text-sm"
+      > 
         Clear Filters
       </button>
     </div>

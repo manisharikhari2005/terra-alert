@@ -64,3 +64,6 @@ select,
 textarea {
   font: inherit;
 }
+select {
+  font-size: 13px !important;
+}

@@ -19,29 +19,39 @@ export default function AlertsPage() {
 
   return (
     <AppShell>
-      <main className="min-h-screen p-4 sm:p-6 lg:p-8">
-        <h1 className="text-2xl font-semibold text-(--foreground)">Alerts</h1>
+      <main className="mx-auto min-h-screen w-full max-w-[1600px] p-3 sm:p-5 lg:p-7">
+        {/* Page Header */}
+        <div className="mb-5 sm:mb-6">
+          <h1 className="text-xl font-semibold tracking-tight text-(--foreground) sm:text-2xl">
+            Alerts
+          </h1>
 
-        <p className="mt-2 text-sm text-(--muted-foreground)">
-          Monitor and review active disaster alerts.
-        </p>
+          <p className="mt-1 text-xs text-(--muted-foreground) sm:mt-2 sm:text-sm">
+            Monitor and review active disaster alerts.
+          </p>
+        </div>
 
-        <div className="mt-6 rounded-2xl border border-(--border) bg-(--surface) p-5 transition-all duration-300 hover:border-(--accent)/40">
+        {/* Search and Filters */}
+        <section className="rounded-xl border border-(--border) bg-(--surface) p-3 transition-colors duration-200 hover:border-(--accent)/40 sm:rounded-2xl sm:p-5">
           <div>
-            <label className="mb-2 block text-sm font-medium text-(--foreground)">
-              Search
+            <label
+              htmlFor="alert-search"
+              className="mb-1.5 block text-xs font-medium text-(--foreground) sm:mb-2 sm:text-sm"
+            >
+              Search alerts
             </label>
 
             <input
+              id="alert-search"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search alerts..."
-              className="w-full max-w-md rounded-lg border border-(--border) bg-(--surface) px-4 py-2 text-sm text-(--foreground) placeholder:text-(--muted-foreground) outline-none transition focus:border-(--accent)"
+              placeholder="Search by location..."
+              className="w-full rounded-lg border border-(--border) bg-(--surface) px-3 py-2 text-sm text-(--foreground) placeholder:text-(--muted-foreground) outline-none transition focus:border-(--accent) sm:max-w-md sm:px-4"
             />
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4 border-t border-(--border) pt-3 sm:mt-5 sm:pt-4">
             <FilterBar
               type={type}
               setType={setType}
@@ -50,16 +60,27 @@ export default function AlertsPage() {
               clearFilters={clearFilters}
             />
           </div>
-        </div>
+        </section>
 
-        <div className="mt-8 border-t border-(--border) pt-6">
+        {/* Alert Results */}
+        <section className="mt-5 border-t border-(--border) pt-4 sm:mt-7 sm:pt-5">
+          <div className="mb-3">
+            <h2 className="text-base font-semibold text-(--foreground)">
+              All Alerts
+            </h2>
+
+            <p className="mt-1 text-xs text-(--muted-foreground) sm:text-sm">
+              Browse reported disaster events and filter by severity or type.
+            </p>
+          </div>
+
           <AlertList
             type={type}
             severity={severity}
             search={search}
             clearFilters={clearFilters}
           />
-        </div>
+        </section>
       </main>
     </AppShell>
   );

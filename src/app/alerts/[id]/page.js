@@ -69,11 +69,20 @@ export default async function AlertPage({ params }) {
         {/* Alert Details */}
         <div className="mt-6">
           <AlertDetails
+            id={alert.id}
             type={alert.type}
             location={alert.location}
             details={alert.details}
             severity={alert.severity}
             time={formatRelativeTime(alert.occurred_at)}
+            occurredAt={alert.occurred_at}
+            createdAt={alert.created_at}
+            latitude={alert.latitude}
+            longitude={alert.longitude}
+            magnitude={alert.magnitude}
+            depth={alert.depth}
+            source={alert.source}
+            eventData={alert.event_data}
           />
         </div>
       </main>

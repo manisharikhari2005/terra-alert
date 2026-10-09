@@ -3,47 +3,53 @@
 import { useEffect, useState } from "react";
 import AlertCard from "./AlertCard";
 
-export default function AlertList({ type, severity, search, clearFilters }) {
+export default function AlertList({
+  type,
+  severity,
+  search,
+  clearFilters,
+  limit,
+}) {
   const [alerts, setAlerts] = useState([]);
 
- useEffect(() => {
-   const fetchAlerts = async () => {
-     try {
-       const params = new URLSearchParams();
+  useEffect(() => {
+    const fetchAlerts = async () => {
+      try {
+        const params = new URLSearchParams();
 
-       if (type && type !== "All Types") {
-         params.set("type", type);
-       }
+        if (type && type !== "All Types") {
+          params.set("type", type);
+        }
 
-       if (severity && severity !== "All Severities") {
-         params.set("severity", severity);
-       }
-       if (search) {
-         params.set("location", search);
-       }
+        if (severity && severity !== "All Severities") {
+          params.set("severity", severity);
+        }
+        if (search) {
+          params.set("location", search);
+        }
 
-       const query = params.toString();
+        const query = params.toString();
 
-       const response = await fetch(
-         `http://localhost:5000/api/alerts${query ? `?${query}` : ""}`,
-       );
+        const response = await fetch(
+          `http://localhost:5000/api/alerts${query ? `?${query}` : ""}`,
+        );
 
-       if (!response.ok) {
-         throw new Error("Failed to fetch alerts");
-       }
+        if (!response.ok) {
+          throw new Error("Failed to fetch alerts");
+        }
 
-       const result = await response.json();
+        const result = await response.json();
 
-       setAlerts(result.data);
-     } catch (error) {
-       console.error("Failed to fetch alerts:", error);
-     }
-   };
+        setAlerts(result.data);
+      } catch (error) {
+        console.error("Failed to fetch alerts:", error);
+      }
+    };
 
-   fetchAlerts();
- }, [type, severity, search]);
+    fetchAlerts();
+  }, [type, severity, search]);
 
-const filteredAlerts = alerts;
+const filteredAlerts = limit ? alerts.slice(0, limit) : alerts;
 
   if (filteredAlerts.length === 0) {
     return (
@@ -74,17 +80,23 @@ const filteredAlerts = alerts;
       </p>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {filteredAlerts.map((alert) => (
-          <AlertCard
-            id={alert.id}
+        
+        {filteredAlerts.map((alert, index) => (
+          <div
             key={alert.id}
-            type={alert.type}
-            location={alert.location}
-            details={alert.details}
-            severity={alert.severity}
-            time={alert.occurred_at}
-          />
+            className={limit && index >= 2 ? "hidden sm:block" : ""}
+          >
+            <AlertCard
+              id={alert.id}
+              type={alert.type}
+              location={alert.location}
+              details={alert.details}
+              severity={alert.severity}
+              time={alert.occurred_at}
+            />
+          </div>
         ))}
+        
       </div>
     </div>
   );

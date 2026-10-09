@@ -2,15 +2,16 @@ import AppShell from "@/components/AppShell";
 import DashboardHeader from "@/components/DashboardHeader";
 import StatsCards from "@/components/StatsCards";
 import AlertList from "@/components/AlertList";
+import GlobalEventMap from "@/components/GlobalEventMap";
 
 export default function Home() {
   return (
     <AppShell>
-      <main className="p-4 sm:p-6 lg:p-8">
+      <main className="mx-auto w-full max-w-[1600px] p-4 sm:p-5 lg:p-7">
         <DashboardHeader />
 
-        <div className="mt-6 grid items-stretch gap-4 xl:grid-cols-[1fr_2fr]">
-          <div className="rounded-2xl border border-(--border) bg-(--surface) p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-(--success)/40 hover:shadow-lg hover:shadow-black/5">
+        <div className="mt-5 grid items-stretch gap-4 2xl:grid-cols-[0.9fr_2.1fr]">
+          <div className="rounded-xl border border-(--border) bg-(--surface) p-4 transition-colors duration-200 hover:border-(--success)/40 sm:p-5">
             <p className="text-sm text-(--muted-foreground)">
               Global Monitoring Status
             </p>
@@ -33,13 +34,31 @@ export default function Home() {
           <StatsCards />
         </div>
 
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold text-(--foreground)">
-            Recent Disasters
-          </h2>
+        <div className="mt-7 grid grid-cols-1 items-start gap-5 xl:grid-cols-[1.35fr_0.9fr]">
+          <section className="min-w-0">
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-base font-semibold text-(--foreground)">
+                  Recent Disasters
+                </h2>
+                <p className="mt-1 text-sm text-(--muted-foreground)">
+                  Latest reported events
+                </p>
+              </div>
 
-          <div className="mt-4">
-            <AlertList />
+              <a
+                href="/alerts"
+                className="shrink-0 pt-0.5 text-sm font-medium text-(--accent) hover:opacity-75"
+              >
+                View all →
+              </a>
+            </div>
+
+            <AlertList limit={6} />
+          </section>
+
+          <div className="min-w-0">
+            <GlobalEventMap />
           </div>
         </div>
       </main>
