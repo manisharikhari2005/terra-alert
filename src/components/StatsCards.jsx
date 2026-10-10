@@ -1,27 +1,93 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Activity, BellRing, Globe2, TrendingUp } from "lucide-react";
 
-const stats = [
-  {
-    label: "Active Events",
-    value: "24",
-    description: "Currently being monitored",
-    icon: Activity,
-  },
-  {
-    label: "Alerts Today",
-    value: "8",
-    description: "Reported in the last 24 hours",
-    icon: BellRing,
-  },
-  {
-    label: "Countries Affected",
-    value: "12",
-    description: "Countries with active events",
-    icon: Globe2,
-  },
-];
+const API_URL = "http://localhost:5000/api/alerts";
+const COUNTRIES_API_URL = "http://localhost:5000/api/alerts/countries/count";
 
 export default function StatsCards() {
+  const [alerts, setAlerts] = useState([]);
+  const [countryCount, setCountryCount] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [countriesLoading, setCountriesLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAlerts = async () => {
+      try {
+        const response = await fetch(API_URL);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error("Failed to fetch alerts");
+        }
+
+        setAlerts(result.data);
+      } catch (error) {
+        console.error("Stats fetch error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchCountryCount = async () => {
+      try {
+        const response = await fetch(COUNTRIES_API_URL);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error("Failed to fetch country count");
+        }
+
+        setCountryCount(result.data.count);
+      } catch (error) {
+        console.error("Country count fetch error:", error);
+      } finally {
+        setCountriesLoading(false);
+      }
+    };
+
+    fetchAlerts();
+    fetchCountryCount();
+  }, []);
+
+  const now = Date.now();
+  const last24Hours = now - 24 * 60 * 60 * 1000;
+  const lastHour = now - 60 * 60 * 1000;
+
+  const activeEvents = alerts.filter((alert) => {
+    const occurredAt = new Date(alert.occurred_at).getTime();
+
+    return occurredAt >= lastHour && occurredAt <= now;
+  }).length;
+
+  const alertsToday = alerts.filter((alert) => {
+    const occurredAt = new Date(alert.occurred_at).getTime();
+
+    return occurredAt >= last24Hours && occurredAt <= now;
+  }).length;
+
+  const stats = [
+    {
+      label: "Recent Events",
+      value: loading ? "..." : activeEvents,
+      description: "Events in the last hour",
+      icon: Activity,
+    },
+    {
+      label: "Alerts Today",
+      value: loading ? "..." : alertsToday,
+      description: "Reported in the last 24 hours",
+      icon: BellRing,
+    },
+    {
+      label: "Countries Affected",
+      value: countriesLoading ? "..." : (countryCount ?? "—"),
+      description: "Countries with recorded alerts",
+      icon: Globe2,
+    },
+  ];
+
   return (
     <div className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-3 sm:gap-3 xl:gap-4">
       {stats.map((stat) => {
@@ -43,9 +109,10 @@ export default function StatsCards() {
             </div>
 
             <div className="mt-2 sm:mt-4">
-              <h2 className="text-xl font-semibold tracking-tight text-(--foreground) sm:text-2xl ">
+              <h2 className="text-xl font-semibold tracking-tight text-(--foreground) sm:text-2xl">
                 {stat.value}
               </h2>
+
               <div className="mt-2 flex items-start gap-1.5">
                 <TrendingUp
                   size={13}

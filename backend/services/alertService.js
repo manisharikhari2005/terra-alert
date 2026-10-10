@@ -20,7 +20,7 @@ const getAllAlerts = async (filters) => {
     values.push(`%${location}%`);
     query += ` AND location ILIKE $${values.length}`;
   }
-  
+
   query += " ORDER BY occurred_at DESC";
 
   const result = await pool.query(query, values);
@@ -96,4 +96,20 @@ const getAlertById = async (id) => {
 
   return result.rows[0] || null;
 };
-export { getAllAlerts, getAlertById, createAlert, updateAlert, deleteAlert };
+const getCountryCount = async () => {
+  const result = await pool.query(
+    `SELECT COUNT(DISTINCT country)::int AS count
+     FROM alerts
+     WHERE country IS NOT NULL`,
+  );
+
+  return result.rows[0].count;
+};
+export {
+  getAllAlerts,
+  getAlertById,
+  createAlert,
+  updateAlert,
+  deleteAlert,
+  getCountryCount,
+};

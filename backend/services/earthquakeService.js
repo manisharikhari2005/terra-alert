@@ -1,4 +1,5 @@
 import pool from "../config/db.js";
+import { iso1A3Code } from "country-coder";
 
 const USGS_API_URL =
   "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson";
@@ -17,6 +18,29 @@ const getEarthquakeSeverity = (magnitude) => {
   }
 
   return "Low";
+};
+
+
+const getCountryFromCoordinates = (latitude, longitude) => {
+  if (
+    latitude === null ||
+    latitude === undefined ||
+    longitude === null ||
+    longitude === undefined ||
+    !Number.isFinite(Number(latitude)) ||
+    !Number.isFinite(Number(longitude))
+  ) {
+    return null;
+  }
+
+  try {
+    const countryCode = iso1A3Code([Number(longitude), Number(latitude)]);
+
+    return countryCode || null;
+  } catch (error) {
+    console.error("Country detection failed:", error.message);
+    return null;
+  }
 };
 
 const fetchEarthquakes = async () => {
@@ -52,6 +76,7 @@ const normalizeEarthquake = (feature) => {
     latitude,
     longitude,
     depth,
+    country: getCountryFromCoordinates(latitude, longitude),
     occurredAt: new Date(properties.time).toISOString(),
     source: "USGS",
     eventData: feature,
@@ -62,6 +87,45 @@ const getNormalizedEarthquakes = async () => {
   const earthquakes = await fetchEarthquakes();
 
   return earthquakes.map(normalizeEarthquake);
+};
+
+
+const backfillAlertCountries = async () => {
+  const result = await pool.query(
+    `SELECT id, latitude, longitude
+     FROM alerts
+     WHERE country IS NULL
+       AND latitude IS NOT NULL
+       AND longitude IS NOT NULL`,
+  );
+
+  let updated = 0;
+  let skipped = 0;
+
+  for (const alert of result.rows) {
+    const country = getCountryFromCoordinates(alert.latitude, alert.longitude);
+
+    if (!country) {
+      skipped++;
+      continue;
+    }
+
+    await pool.query(
+      `UPDATE alerts
+       SET country = $1
+       WHERE id = $2
+         AND country IS NULL`,
+      [country, alert.id],
+    );
+
+    updated++;
+  }
+
+  console.log(
+    `Country backfill completed: ${updated} updated, ${skipped} skipped`,
+  );
+
+  return { updated, skipped };
 };
 
 const saveEarthquakes = async () => {
@@ -85,9 +149,10 @@ const saveEarthquakes = async () => {
         event_data,
         external_id,
         magnitude,
-        depth
+        depth,
+        country
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
 
       ON CONFLICT (source, external_id)
       WHERE external_id IS NOT NULL
@@ -100,15 +165,18 @@ const saveEarthquakes = async () => {
         occurred_at = EXCLUDED.occurred_at,
         event_data = EXCLUDED.event_data,
         magnitude = EXCLUDED.magnitude,
-        depth = EXCLUDED.depth
+        depth = EXCLUDED.depth,
+        country = EXCLUDED.country
       WHERE
         (alerts.type, alerts.location, alerts.details,
          alerts.latitude, alerts.longitude, alerts.occurred_at,
-         alerts.event_data, alerts.magnitude, alerts.depth)
+         alerts.event_data, alerts.magnitude, alerts.depth,
+         alerts.country)
         IS DISTINCT FROM
         (EXCLUDED.type, EXCLUDED.location, EXCLUDED.details,
          EXCLUDED.latitude, EXCLUDED.longitude, EXCLUDED.occurred_at,
-         EXCLUDED.event_data, EXCLUDED.magnitude, EXCLUDED.depth)
+         EXCLUDED.event_data, EXCLUDED.magnitude, EXCLUDED.depth,
+         EXCLUDED.country)
 
       RETURNING (xmax = 0) AS inserted`,
       [
@@ -124,6 +192,7 @@ const saveEarthquakes = async () => {
         earthquake.externalId,
         earthquake.magnitude,
         earthquake.depth,
+        earthquake.country,
       ],
     );
 
@@ -144,4 +213,5 @@ export {
   normalizeEarthquake,
   getNormalizedEarthquakes,
   saveEarthquakes,
+  backfillAlertCountries,
 };

@@ -13,6 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.6",
+    "country-coder": "^2.1.0",
+    "country-reverse-geocoding": "^0.2.2",
     "dotenv": "^18.0.4",
     "express": "^5.2.1",
     "node-cron": "^4.6.0",

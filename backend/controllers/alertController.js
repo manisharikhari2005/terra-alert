@@ -4,6 +4,7 @@ import {
   createAlert,
   updateAlert,
   deleteAlert,
+  getCountryCount
 } from "../services/alertService.js";
 
 const allowedSeverities = ["Low", "Medium", "High", "Critical"];
@@ -24,6 +25,18 @@ const getAlerts = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: alerts,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+const getCountriesCount = async (req, res, next) => {
+  try {
+    const count = await getCountryCount();
+
+    res.status(200).json({
+      success: true,
+      data: { count },
     });
   } catch (error) {
     next(error);
@@ -231,4 +244,11 @@ const removeAlert = async (req, res, next) => {
   }
 };
 
-export { getAlerts, getAlert, postAlert, patchAlert, removeAlert };
+export {
+  getAlerts,
+  getAlert,
+  postAlert,
+  patchAlert,
+  removeAlert,
+  getCountriesCount,
+};
