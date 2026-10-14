@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiUrl } from "@/lib/api";
 import { Activity, BellRing, Globe2, TrendingUp } from "lucide-react";
 
-const API_URL = "http://localhost:5000/api/alerts";
-const COUNTRIES_API_URL = "http://localhost:5000/api/alerts/countries/count";
+const API_URL = apiUrl("alerts");
+const COUNTRIES_API_URL = apiUrl("alerts/countries/count");
 
 export default function StatsCards() {
   const [alerts, setAlerts] = useState([]);
@@ -94,9 +95,9 @@ export default function StatsCards() {
         const Icon = stat.icon;
 
         return (
-          <div
+          <div 
             key={stat.label}
-            className="group flex min-w-0 flex-col rounded-xl border border-(--border) bg-(--surface) p-3 transition-all duration-200 hover:border-(--accent)/40 hover:shadow-md hover:shadow-black/5 sm:p-4"
+            className="group flex min-w-0 flex-col rounded-xl border border-(--border) bg-(--surface) p-3 transition-all duration-200 hover:border-(--accent)/40 hover:shadow-md hover:shadow-black/5 sm:p-3"
           >
             <div className="flex items-center justify-between gap-3">
               <p className="text-xs text-(--muted-foreground) sm:text-sm">
@@ -108,7 +109,7 @@ export default function StatsCards() {
               </div>
             </div>
 
-            <div className="mt-2 sm:mt-4">
+            <div> 
               <h2 className="text-xl font-semibold tracking-tight text-(--foreground) sm:text-2xl">
                 {stat.value}
               </h2>

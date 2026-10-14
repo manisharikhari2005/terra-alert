@@ -15,10 +15,11 @@ import {
   AlertTriangle,
   RefreshCw,
 } from "lucide-react";
+import { apiUrl } from "@/lib/api";
 import AppShell from "@/components/AppShell";
 
 const STORAGE_KEY = "disaster-watch-saved-locations";
-const API_URL = "http://localhost:5000/api/alerts";
+const API_URL = apiUrl("alerts");
 
 function formatDate(value) {
   if (!value) return "Time unavailable";

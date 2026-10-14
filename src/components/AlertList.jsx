@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import AlertCard from "./AlertCard";
+import { apiUrl } from "@/lib/api";
+
+const SETTINGS_KEY = "disaster-watch-settings";
 
 export default function AlertList({
   type,
@@ -13,11 +16,50 @@ export default function AlertList({
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showLowSeverity, setShowLowSeverity] = useState(true);
+  const [settingsReady, setSettingsReady] = useState(false);
+
+  // Read saved preference and keep it synced across same-tab updates.
+  useEffect(() => {
+    function readSettings() {
+      try {
+        const stored = localStorage.getItem(SETTINGS_KEY);
+        const parsed = stored ? JSON.parse(stored) : {};
+
+        setShowLowSeverity(
+          typeof parsed.showLowSeverity === "boolean"
+            ? parsed.showLowSeverity
+            : true,
+        );
+      } catch (err) {
+        console.error("Could not read alert preferences:", err);
+        setShowLowSeverity(true);
+      } finally {
+        setSettingsReady(true);
+      }
+    }
+
+    readSettings();
+
+    // The storage event handles updates from other tabs.
+    window.addEventListener("storage", readSettings);
+
+    // Custom event handles updates made in the current tab.
+    window.addEventListener("disaster-watch-settings-changed", readSettings);
+
+    return () => {
+      window.removeEventListener("storage", readSettings);
+      window.removeEventListener(
+        "disaster-watch-settings-changed",
+        readSettings,
+      );
+    };
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
 
-    const fetchAlerts = async () => {
+    async function fetchAlerts() {
       try {
         setLoading(true);
         setError("");
@@ -39,8 +81,11 @@ export default function AlertList({
         const query = params.toString();
 
         const response = await fetch(
-          `http://localhost:5000/api/alerts${query ? `?${query}` : ""}`,
-          { signal: controller.signal },
+          apiUrl(`alerts${query ? `?${query}` : ""}`),
+          {
+            signal: controller.signal,
+            cache: "no-store",
+          },
         );
 
         if (!response.ok) {
@@ -49,15 +94,11 @@ export default function AlertList({
 
         const result = await response.json();
 
-        const alertData = Array.isArray(result)
-          ? result
-          : Array.isArray(result.data)
-            ? result.data
-            : Array.isArray(result.alerts)
-              ? result.alerts
-              : [];
+        if (!result.success || !Array.isArray(result.data)) {
+          throw new Error("Invalid alerts response.");
+        }
 
-        setAlerts(alertData);
+        setAlerts(result.data);
       } catch (err) {
         if (err.name !== "AbortError") {
           console.error("Failed to fetch alerts:", err);
@@ -69,16 +110,23 @@ export default function AlertList({
           setLoading(false);
         }
       }
-    };
+    }
 
     fetchAlerts();
 
     return () => controller.abort();
   }, [type, severity, search]);
 
-  const filteredAlerts = limit ? alerts.slice(0, limit) : alerts;
+  // Apply the saved preference without changing the backend data or counts.
+  const preferenceFilteredAlerts = showLowSeverity
+    ? alerts
+    : alerts.filter((alert) => String(alert.severity).toLowerCase() !== "low");
 
-  if (loading) {
+  const filteredAlerts = limit
+    ? preferenceFilteredAlerts.slice(0, limit)
+    : preferenceFilteredAlerts;
+
+  if (!settingsReady || loading) {
     return (
       <div className="rounded-xl border border-(--border) bg-(--surface) p-6 text-center">
         <p className="text-sm text-(--muted-foreground)">Loading alerts...</p>
@@ -110,7 +158,9 @@ export default function AlertList({
         </h3>
 
         <p className="mt-1.5 text-xs text-(--muted-foreground) sm:text-sm">
-          No alerts match your search or selected filters.
+          {!showLowSeverity && (severity === "All Severities" || !severity)
+            ? "No alerts match your filters, or only low-severity events are available and currently hidden."
+            : "No alerts match your search or selected filters."}
         </p>
 
         {clearFilters && (
@@ -128,14 +178,14 @@ export default function AlertList({
 
   return (
     <div>
-      {/* Results Count */}
       <p className="mb-3 text-xs text-(--muted-foreground) sm:text-sm">
         Showing {filteredAlerts.length}
-        {limit && alerts.length > limit ? ` of ${alerts.length}` : ""}{" "}
+        {limit && preferenceFilteredAlerts.length > limit
+          ? ` of ${preferenceFilteredAlerts.length}`
+          : ""}{" "}
         {filteredAlerts.length === 1 ? "alert" : "alerts"}
       </p>
 
-      {/* Alert Cards */}
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-4">
         {filteredAlerts.map((alert, index) => (
           <div

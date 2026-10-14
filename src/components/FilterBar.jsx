@@ -55,8 +55,7 @@ export default function FilterBar({
             className="mt-1 block w-full min-w-0 rounded-lg border border-(--border) bg-(--surface-elevated) px-2 py-2 text-xs text-(--foreground) outline-none transition-colors hover:border-(--accent) focus:border-(--accent) sm:mt-2 sm:min-w-40 sm:px-3 sm:text-sm"
           >
             <option>All Severities</option>
-            <option>Critical</option>
-            <option>High</option>
+               <option>High</option>
             <option>Medium</option>
             <option>Low</option>
           </select>

@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiUrl } from "@/lib/api";
 import { ExternalLink, MapPin } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const DisasterLeafletMap = dynamic(() => import("./DisasterLeafletMap"), {
   ssr: false,
   loading: () => (
-    <div className="flex md:h-56 sm:h-30 items-center justify-center text-sm text-(--muted-foreground)">
+    <div className="flex h-64 items-center justify-center text-sm text-(--muted-foreground) sm:h-72">
       Loading map...
     </div>
   ),
@@ -20,15 +21,18 @@ export default function GlobalEventMap() {
   useEffect(() => {
     async function fetchAlerts() {
       try {
-        const response = await fetch("http://localhost:5000/api/alerts", {
-          cache: "no-store",
-        });
+     const response = await fetch(apiUrl("alerts"), {
+       cache: "no-store",
+     });
 
         if (!response.ok) {
           throw new Error("Failed to fetch alerts");
         }
 
         const result = await response.json();
+        if (!result.success) {
+          throw new Error("Failed to fetch alerts");
+        }
 
         const validAlerts = (
           Array.isArray(result.data) ? result.data : []
@@ -83,10 +87,10 @@ export default function GlobalEventMap() {
           <div className="relative">
             <DisasterLeafletMap alerts={mapAlerts} />
 
-            <div className="absolute left-38 md:left-70 top-3 z-[1000] rounded-lg border border-(--border) bg-(--surface)/95 px-3 py-2 text-xs text-(--foreground) shadow-sm">
+            <div className="absolute right-3 top-3 z-[1000] rounded-lg border border-(--border) bg-(--surface)/95 px-3 py-2 text-xs text-(--foreground) shadow-sm">
               <span className="font-semibold">{mapAlerts.length}</span> mapped
               events
-            </div>
+            </div> 
           </div>
 
           {/* Severity Legend - below map */}
@@ -151,7 +155,7 @@ export default function GlobalEventMap() {
                 </div>
               ))}
             </div>
- 
+
             <a
               href="/alerts"
               className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-(--accent) hover:opacity-75"

@@ -2,15 +2,24 @@ import { notFound } from "next/navigation";
 import AlertDetails from "@/components/AlertDetails";
 import AppShell from "@/components/AppShell";
 import Link from "next/link";
+import { apiUrl } from "@/lib/api";
 
 const formatRelativeTime = (date) => {
-  const diff = Date.now() - new Date(date).getTime();
+  if (!date) return "Time unavailable";
+
+  const timestamp = new Date(date).getTime();
+
+  if (!Number.isFinite(timestamp)) {
+    return "Time unavailable";
+  }
+
+  const diff = Date.now() - timestamp;
+
+  if (diff < 0) return "Just now";
 
   const minutes = Math.floor(diff / (1000 * 60));
 
-  if (minutes < 1) {
-    return "Just now";
-  }
+  if (minutes < 1) return "Just now";
 
   if (minutes < 60) {
     return `${minutes} min ago`;
@@ -26,18 +35,24 @@ const formatRelativeTime = (date) => {
 
   return `${days} ${days === 1 ? "day" : "days"} ago`;
 };
+
 export default async function AlertPage({ params }) {
   const { id } = await params;
 
-  const response = await fetch(`http://localhost:5000/api/alerts/${id}`, {
-    cache: "no-store",
-  });
+const response = await fetch(apiUrl(`alerts/${id}`), {
+  cache: "no-store",
+});
 
   if (!response.ok) {
     notFound();
   }
 
   const result = await response.json();
+
+  if (!result.success || !result.data) {
+    notFound();
+  }
+
   const alert = result.data;
 
   if (!alert) {
@@ -52,7 +67,7 @@ export default async function AlertPage({ params }) {
           href="/"
           className="mb-4 inline-flex items-center text-sm text-(--muted-foreground) transition hover:text-(--foreground)"
         >
-          ← Back to Overview
+          Back to Overview
         </Link>
 
         {/* Header */}

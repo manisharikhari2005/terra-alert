@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X } from "lucide-react";
+import { X, LocateFixed } from "lucide-react";
 
 export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();
@@ -10,6 +10,7 @@ export default function Sidebar({ isOpen, onClose }) {
   const workspaceLinks = [
     { name: "Overview", href: "/" },
     { name: "Live Map", href: "/map" },
+    { name: "Near Me", href: "/near-me", icon: LocateFixed },
     { name: "Alerts", href: "/alerts" },
     { name: "Saved Locations", href: "/locations" },
   ];
@@ -24,14 +25,14 @@ export default function Sidebar({ isOpen, onClose }) {
         border-r border-(--border)
         bg-(--surface)
         transition-transform duration-300 ease-in-out
-     lg:fixed lg:inset-y-0 lg:left-0 lg:h-screen lg:w-72 lg:translate-x-0
+        lg:fixed lg:inset-y-0 lg:left-0 lg:h-screen lg:w-72 lg:translate-x-0
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
       `}
     >
       <div className="p-5">
         {/* Brand */}
         <div className="flex items-start justify-between">
-          <Link href="/" className="block">
+          <Link href="/" className="block" onClick={onClose}>
             <div className="flex items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full bg-(--accent)" />
 
@@ -62,7 +63,13 @@ export default function Sidebar({ isOpen, onClose }) {
 
         <nav className="mt-3 flex flex-col gap-2">
           {workspaceLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive =
+              link.href === "/"
+                ? pathname === "/"
+                : pathname === link.href ||
+                  pathname.startsWith(`${link.href}/`);
+
+            const Icon = link.icon;
 
             return (
               <Link
@@ -75,7 +82,10 @@ export default function Sidebar({ isOpen, onClose }) {
                     : "text-(--muted) hover:bg-(--surface-elevated) hover:text-(--foreground)"
                 }`}
               >
-                <span>{link.name}</span>
+                <span className="flex items-center gap-3">
+                  {Icon && <Icon size={17} />}
+                  {link.name}
+                </span>
 
                 {isActive && (
                   <span className="h-1.5 w-1.5 rounded-full bg-(--accent)" />
@@ -92,7 +102,8 @@ export default function Sidebar({ isOpen, onClose }) {
 
         <nav className="mt-3 flex flex-col gap-2">
           {systemLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive =
+              pathname === link.href || pathname.startsWith(`${link.href}/`);
 
             return (
               <Link

@@ -1,8 +1,7 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
-
+import { apiUrl } from "@/lib/api";
 import AlertList from "@/components/AlertList";
 import FilterBar from "@/components/FilterBar";
 import AppShell from "@/components/AppShell";
@@ -21,7 +20,7 @@ export default function AlertsPage() {
   useEffect(() => {
     const fetchSeverityCounts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/alerts");
+        const response = await fetch(apiUrl("alerts"));
 
         if (!response.ok) {
           throw new Error("Failed to fetch alerts");
@@ -29,13 +28,11 @@ export default function AlertsPage() {
 
         const result = await response.json();
 
-        const alerts = Array.isArray(result)
-          ? result
-          : Array.isArray(result.data)
-            ? result.data
-            : Array.isArray(result.alerts)
-              ? result.alerts
-              : [];
+        if (!result.success || !Array.isArray(result.data)) {
+          throw new Error("Invalid alerts response.");
+        }
+
+        const alerts = result.data;
 
         const counts = {
           High: 0,
@@ -44,11 +41,14 @@ export default function AlertsPage() {
         };
 
         alerts.forEach((alert) => {
-          const level = alert.severity?.trim();
+          const level =
+            typeof alert.severity === "string"
+              ? alert.severity.trim().toLowerCase()
+              : "";
 
-          if (level && Object.hasOwn(counts, level)) {
-            counts[level]++;
-          }
+          if (level === "high") counts.High++;
+          else if (level === "medium") counts.Medium++;
+          else if (level === "low") counts.Low++;
         });
 
         setSeverityCounts(counts);
@@ -99,7 +99,7 @@ export default function AlertsPage() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by location..."
                 className="w-full rounded-lg border border-(--border) bg-(--surface) px-3 py-1.5 text-xs text-(--foreground) placeholder:text-(--muted-foreground) outline-none transition focus:border-(--accent) sm:max-w-sm"
-              /> 
+              />
 
               <div className="mt-3 border-t border-(--border) pt-3">
                 <FilterBar

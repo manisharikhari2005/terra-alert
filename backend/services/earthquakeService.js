@@ -2,7 +2,7 @@ import pool from "../config/db.js";
 import { iso1A3Code } from "country-coder";
 
 const USGS_API_URL =
-  "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson";
+  "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
 
 const getEarthquakeSeverity = (magnitude) => {
   if (magnitude === null || magnitude === undefined) {

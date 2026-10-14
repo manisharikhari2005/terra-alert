@@ -1,10 +1,39 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { apiUrl } from "@/lib/api";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import Link from "next/link";
+
+const STORAGE_KEY = "disaster-watch-settings";
+
+const REGION_VIEWS = {
+  Global: { center: [20, 0], zoom: 2 },
+  India: { center: [22.5, 79], zoom: 4 },
+  Asia: { center: [34, 100], zoom: 3 },
+  "North America": { center: [40, -100], zoom: 3 },
+  Europe: { center: [54, 15], zoom: 4 },
+};
+
+function getSavedMapView() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if (saved) {
+      const settings = JSON.parse(saved);
+
+      if (REGION_VIEWS[settings.mapView]) {
+        return settings.mapView;
+      }
+    }
+  } catch (error) {
+    console.error("Could not read map settings:", error);
+  }
+
+  return "Global";
+}
 
 function getMarkerIcon() {
   return L.divIcon({
@@ -28,17 +57,55 @@ function getMarkerIcon() {
 
 const earthquakeIcon = getMarkerIcon();
 
+function MapRegionController({ region }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const view = REGION_VIEWS[region] || REGION_VIEWS.Global;
+
+    map.setView(view.center, view.zoom, {
+      animate: true,
+    });
+  }, [map, region]);
+
+  return null;
+}
+
 export default function DisasterMap() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [region, setRegion] = useState("Global");
+
+  useEffect(() => {
+    const syncMapRegion = () => {
+      setRegion(getSavedMapView());
+    };
+
+    syncMapRegion();
+
+    window.addEventListener("disaster-watch-settings-changed", syncMapRegion);
+
+    window.addEventListener("storage", syncMapRegion);
+
+    return () => {
+      window.removeEventListener(
+        "disaster-watch-settings-changed",
+        syncMapRegion,
+      );
+
+      window.removeEventListener("storage", syncMapRegion);
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
 
     const fetchEarthquakes = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/alerts");
+        const response = await fetch(apiUrl("alerts"), {
+          cache: "no-store",
+        });
 
         if (!response.ok) {
           throw new Error("Failed to fetch alerts");
@@ -46,9 +113,11 @@ export default function DisasterMap() {
 
         const result = await response.json();
 
-        const alerts = Array.isArray(result.data) ? result.data : [];
+        if (!result.success || !Array.isArray(result.data)) {
+          throw new Error("Invalid alerts response");
+        }
 
-        const validEvents = alerts.filter((event) => {
+        const validEvents = result.data.filter((event) => {
           const latitude = Number(event.latitude);
           const longitude = Number(event.longitude);
 
@@ -94,6 +163,8 @@ export default function DisasterMap() {
     };
   }, []);
 
+  const initialView = REGION_VIEWS[region] || REGION_VIEWS.Global;
+
   return (
     <>
       {loading && events.length === 0 && (
@@ -109,11 +180,13 @@ export default function DisasterMap() {
       )}
 
       <MapContainer
-        center={[20, 0]}
-        zoom={2}
+        center={initialView.center}
+        zoom={initialView.zoom}
         scrollWheelZoom={true}
         className="h-full w-full"
       >
+        <MapRegionController region={region} />
+
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -142,7 +215,9 @@ export default function DisasterMap() {
                     </span>
                   </div>
 
-                  <p className="mt-2 text-xs text-gray-600">{event.location}</p>
+                  <p className="mt-2 text-xs text-gray-600">
+                    {event.location || "Location unavailable"}
+                  </p>
 
                   <p className="mt-2 text-xs text-gray-600">
                     Severity: {event.severity}

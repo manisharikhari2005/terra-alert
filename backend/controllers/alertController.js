@@ -9,7 +9,7 @@ import {
 
 const allowedSeverities = ["Low", "Medium", "High", "Critical"];
 
-const isValidDate = (value) =>
+const isValidDate = (value) => 
   typeof value === "string" &&
   value.trim() !== "" &&
   !Number.isNaN(Date.parse(value));
@@ -17,7 +17,7 @@ const isValidDate = (value) =>
 const isValidOptionalDetails = (value) =>
   value === undefined || value === null || typeof value === "string";
 
-// GET /api/alerts
+// GET /api/alerts 
 const getAlerts = async (req, res, next) => {
   try {
     const alerts = await getAllAlerts(req.query);

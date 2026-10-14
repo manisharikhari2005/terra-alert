@@ -47,7 +47,8 @@ export default function DisasterLeafletMap({ alerts }) {
       center={center}
       zoom={2}
       scrollWheelZoom={false}
-      className="h-56 w-full"
+      style={{ height: "186px", width: "100%" }}
+      className="sm:!h-[208px]"
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

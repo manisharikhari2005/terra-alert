@@ -1,6 +1,5 @@
 import {
   Activity,
-  ArrowLeft,
   CalendarClock,
   Clock3,
   Database,
@@ -46,7 +45,11 @@ export default function AlertDetails({
     latitude !== "" &&
     longitude !== "" &&
     Number.isFinite(Number(latitude)) &&
-    Number.isFinite(Number(longitude));
+    Number.isFinite(Number(longitude)) &&
+    Number(latitude) >= -90 &&
+    Number(latitude) <= 90 &&
+    Number(longitude) >= -180 &&
+    Number(longitude) <= 180;
 
   const formatDate = (value) => {
     if (!value) return "Unavailable";
@@ -62,10 +65,10 @@ export default function AlertDetails({
 
   const mapUrl = hasCoordinates
     ? `https://www.openstreetmap.org/export/embed.html?bbox=${
-        Number(longitude) - 0.04
-      }%2C${Number(latitude) - 0.025}%2C${
-        Number(longitude) + 0.04
-      }%2C${Number(latitude) + 0.025}&layer=mapnik&marker=${latitude}%2C${longitude}`
+        Number(longitude) - 0.5
+      }%2C${Number(latitude) - 0.3}%2C${
+        Number(longitude) + 0.5
+      }%2C${Number(latitude) + 0.3}&layer=mapnik&marker=${latitude}%2C${longitude}`
     : null;
 
   return (
@@ -78,14 +81,13 @@ export default function AlertDetails({
               href="/alerts"
               className="mb-4 inline-flex items-center gap-2 text-sm text-(--muted-foreground) transition-colors hover:text-(--accent)"
             >
-              <ArrowLeft size={16} />
               Back to Alerts
             </a>
 
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-2 rounded-full border border-(--success)/25 bg-(--success)/10 px-2.5 py-1 text-xs font-medium text-(--success)">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-(--success)" />
-                ACTIVE EVENT
+                DISASTER ALERT
               </span>
 
               <span className="text-xs text-(--muted-foreground)">

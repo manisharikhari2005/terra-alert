@@ -2,14 +2,23 @@
 
 import { Activity, Waves, Flame } from "lucide-react";
 import { useRouter } from "next/navigation";
+
 const formatRelativeTime = (date) => {
-  const diff = Date.now() - new Date(date).getTime();
+  if (!date) return "Time unavailable";
+
+  const timestamp = new Date(date).getTime();
+
+  if (!Number.isFinite(timestamp)) {
+    return "Time unavailable";
+  }
+
+  const diff = Date.now() - timestamp;
+
+  if (diff < 0) return "Just now";
 
   const minutes = Math.floor(diff / (1000 * 60));
 
-  if (minutes < 1) {
-    return "Just now";
-  }
+  if (minutes < 1) return "Just now";
 
   if (minutes < 60) {
     return `${minutes} min ago`;
@@ -25,6 +34,8 @@ const formatRelativeTime = (date) => {
 
   return `${days} ${days === 1 ? "day" : "days"} ago`;
 };
+
+
 
 export default function AlertCard({
   id,
@@ -68,13 +79,17 @@ export default function AlertCard({
         <DisasterIcon className="h-4 w-4 text-(--accent)" />
 
         <h3 className="text-base font-semibold text-(--foreground) transition-transform group-hover:scale-110">
-          {type}
+          {type || "Disaster Event"}
         </h3>
       </div>
 
-      <p className="mt-1 text-sm text-(--muted-foreground)">{location}</p>
+      <p className="mt-1 text-sm text-(--muted-foreground)">
+        {location || "Location unavailable"}
+      </p>
 
-      <p className="mt-3 text-sm text-(--muted-foreground)">{details}</p>
+      <p className="mt-3 text-sm text-(--muted-foreground)">
+        {details || "No additional details available."}
+      </p>
 
       <div className="mt-4 flex w-full items-center justify-between">
         <div className="flex items-center gap-2">

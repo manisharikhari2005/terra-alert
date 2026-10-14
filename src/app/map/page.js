@@ -1,4 +1,4 @@
-    "use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
@@ -11,7 +11,7 @@ import {
   Waves,
   Clock3,
 } from "lucide-react";
-
+import { apiUrl } from "@/lib/api";
 import MapLegend from "@/components/MapLegend";
 import AppShell from "@/components/AppShell";
 
@@ -98,7 +98,7 @@ export default function MapPage() {
 
     const fetchEarthquakes = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/alerts");
+        const response = await fetch(apiUrl("alerts"));
 
         if (!response.ok) {
           throw new Error("Failed to fetch earthquake alerts");
