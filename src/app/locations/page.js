@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   MapPin,
   MapPinned,
@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { apiUrl } from "@/lib/api";
 import AppShell from "@/components/AppShell";
+
 
 const STORAGE_KEY = "disaster-watch-saved-locations";
 const API_URL = apiUrl("alerts");
@@ -59,6 +60,7 @@ export default function LocationsPage() {
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
   const [ready, setReady] = useState(false);
+  const formRef = useRef(null);
 
   // Load saved locations.
   useEffect(() => {
@@ -306,6 +308,15 @@ export default function LocationsPage() {
     locations.map((location) => location.country.toLowerCase()),
   ).size;
 
+  useEffect(() => {
+    if (showForm) {
+      formRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [showForm]);
+
   return (
     <AppShell>
       <main className="min-h-screen p-4 sm:p-6 lg:p-8">
@@ -342,9 +353,9 @@ export default function LocationsPage() {
           </div>
 
           {/* Summary */}
-          <div className="mt-5 grid grid-cols-1 gap-3 min-[400px]:grid-cols-3">
-            <div className="flex items-center gap-3 rounded-xl border border-(--border) bg-(--surface) p-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-(--surface-elevated) text-(--accent)">
+       <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+            <div className="flex min-w-0 flex-col items-start gap-2 rounded-xl border border-(--border) bg-(--surface) p-3 sm:flex-row sm:items-center sm:gap-3 sm:p-4">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-(--surface-elevated) text-(--accent) sm:h-10 sm:w-10">
                 <MapPin size={19} />
               </div>
               <div>
@@ -357,8 +368,8 @@ export default function LocationsPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 rounded-xl border border-(--border) bg-(--surface) p-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-(--surface-elevated) text-(--accent)">
+            <div className="flex min-w-0 flex-col items-start gap-2 rounded-xl border border-(--border) bg-(--surface) p-3 sm:flex-row sm:items-center sm:gap-3 sm:p-4">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-(--surface-elevated) text-(--accent) sm:h-10 sm:w-10">
                 <Globe2 size={19} />
               </div>
               <div>
@@ -371,8 +382,8 @@ export default function LocationsPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 rounded-xl border border-(--border) bg-(--surface) p-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-(--surface-elevated) text-(--accent)">
+            <div className="flex min-w-0 flex-col items-start gap-2 rounded-xl border border-(--border) bg-(--surface) p-3 sm:flex-row sm:items-center sm:gap-3 sm:p-4">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-(--surface-elevated) text-(--accent) sm:h-10 sm:w-10">
                 <AlertTriangle size={19} />
               </div>
               <div>
@@ -389,8 +400,9 @@ export default function LocationsPage() {
           {/* Add location form */}
           {showForm && (
             <form
+              ref={formRef}
               onSubmit={addLocation}
-              className="mt-5 rounded-xl border border-(--border) bg-(--surface) p-4 sm:p-5"
+              className="mt-5 scroll-mt-4 rounded-xl border border-(--border) bg-(--surface) p-4 sm:p-5"
             >
               <h2 className="text-sm font-semibold text-(--foreground)">
                 Add a location
@@ -696,7 +708,7 @@ export default function LocationsPage() {
           </div>
 
           <p className="mt-6 text-center text-[11px] text-(--muted-foreground)">
-            Disaster Watch · Live alerts from your backend data
+            Terra Alert · Live alerts from your backend data
           </p>
         </div>
       </main>

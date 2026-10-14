@@ -90,7 +90,7 @@ export default function StatsCards() {
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-3 sm:gap-3 xl:gap-4">
+    <div className="grid grid-cols-1 gap-2  min-[768px]:grid-cols-3 sm:gap-3 xl:gap-4">
       {stats.map((stat) => {
         const Icon = stat.icon;
 

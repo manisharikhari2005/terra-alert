@@ -186,7 +186,7 @@ export default function AlertList({
         {filteredAlerts.length === 1 ? "alert" : "alerts"}
       </p>
 
-      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-4">
+      <div className="grid grid-cols-1 gap-3  md:grid-cols-2 lg:gap-4">
         {filteredAlerts.map((alert, index) => (
           <div
             key={alert.id}

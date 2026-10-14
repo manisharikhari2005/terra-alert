@@ -11,11 +11,11 @@ export default function MobileHeader({ isOpen, onToggle }) {
 
         <div>
           <p className="text-sm font-semibold text-(--foreground)">
-            Disaster Watch
+            Terra Alert
           </p>
 
           <p className="text-[8px] font-medium uppercase tracking-[0.18em] text-(--accent)">
-            Global Monitoring
+            Earthquake Monitoring Dashboard
           </p>
         </div>
       </Link>

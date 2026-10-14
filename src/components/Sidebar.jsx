@@ -20,7 +20,7 @@ export default function Sidebar({ isOpen, onClose }) {
   return (
     <aside
       className={`
-        fixed inset-y-0 left-0 z-50
+        fixed inset-y-0 left-0 z-1100
         w-[60%] max-w-62
         border-r border-(--border)
         bg-(--surface)
@@ -31,18 +31,24 @@ export default function Sidebar({ isOpen, onClose }) {
     >
       <div className="p-5">
         {/* Brand */}
-        <div className="flex items-start justify-between">
-          <Link href="/" className="block" onClick={onClose}>
-            <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-(--accent)" />
 
-              <span className="text-sm font-semibold text-(--foreground)">
-                Disaster Watch
+        <div className="flex min-w-0 items-start justify-between gap-3">
+          <Link
+            href="/"
+            onClick={onClose}
+            className="block min-w-0 flex-1"
+            aria-label="Terra Alert home"
+          >
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-(--accent)" />
+
+              <span className="truncate text-sm font-bold tracking-tight text-(--foreground) sm:text-base">
+                Terra Alert
               </span>
             </div>
 
-            <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.2em] text-(--accent)">
-              Global Monitoring
+            <p className="mt-1 pl-[18px] text-[9px] font-medium uppercase tracking-[0.12em] text-(--accent) sm:text-[10px] sm:tracking-[0.16em]">
+              Earthquake Monitoring
             </p>
           </Link>
 
@@ -50,7 +56,7 @@ export default function Sidebar({ isOpen, onClose }) {
             type="button"
             onClick={onClose}
             aria-label="Close navigation"
-            className="rounded-lg p-2 text-(--muted) transition hover:bg-(--surface-elevated) hover:text-(--foreground) lg:hidden"
+            className="shrink-0 rounded-lg p-2 text-(--muted) transition-colors hover:bg-(--surface-elevated) hover:text-(--foreground) lg:hidden"
           >
             <X className="h-5 w-5" />
           </button>
@@ -60,7 +66,6 @@ export default function Sidebar({ isOpen, onClose }) {
         <p className="mt-7 text-[10px] font-medium uppercase tracking-[0.15em] text-(--muted-foreground)">
           Workspace
         </p>
-
         <nav className="mt-3 flex flex-col gap-2">
           {workspaceLinks.map((link) => {
             const isActive =
@@ -94,12 +99,10 @@ export default function Sidebar({ isOpen, onClose }) {
             );
           })}
         </nav>
-
         {/* System */}
         <p className="mt-10 text-[10px] font-medium uppercase tracking-[0.15em] text-(--muted-foreground)">
           System
         </p>
-
         <nav className="mt-3 flex flex-col gap-2">
           {systemLinks.map((link) => {
             const isActive =

@@ -61,25 +61,24 @@ export default function SettingsPage() {
     }
   }, [settings, ready]);
 
-  
-function updateSetting(key, value) {
-  setSettings((current) => {
-    const updated = {
-      ...current,
-      [key]: value,
-    };
+  function updateSetting(key, value) {
+    setSettings((current) => {
+      const updated = {
+        ...current,
+        [key]: value,
+      };
 
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 
-      window.dispatchEvent(new Event("disaster-watch-settings-changed"));
-    } catch (error) {
-      console.error("Could not save settings:", error);
-    }
+        window.dispatchEvent(new Event("disaster-watch-settings-changed"));
+      } catch (error) {
+        console.error("Could not save settings:", error);
+      }
 
-    return updated;
-  });
-}
+      return updated;
+    });
+  }
 
   function resetSettings() {
     setSettings({ ...DEFAULT_SETTINGS });
@@ -291,7 +290,7 @@ function updateSetting(key, value) {
           </div>
 
           <p className="mt-6 text-center text-xs text-(--muted-foreground)">
-            Disaster Watch · Monitoring preferences
+            Terra Alert · Monitoring preferences
           </p>
         </div>
       </main>
