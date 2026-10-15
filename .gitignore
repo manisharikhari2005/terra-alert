@@ -2,6 +2,7 @@
 
 # dependencies
 node_modules/
+**/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -41,3 +42,20 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Backend build output
+**/dist/
+**/build/
+
+# Logs
+logs/
+*.log
+
+# Local database backups
+*.backup
+*.dump
+*.sql
+
+# Local editor settings
+.vscode/
+.idea/
