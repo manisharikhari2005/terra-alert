@@ -5,13 +5,18 @@ dotenv.config();
 
 const { Pool } = pg;
 
-const pool = new Pool({
-  host: "localhost",
-  port: 5432,
-  database: "disaster_watch",
-  user: "postgres",
-  password: process.env.DB_PASSWORD,
-});
+const pool = process.env.DB_URL
+  ? new Pool({
+      connectionString: process.env.DB_URL,
+      ssl: { rejectUnauthorized: false },
+    })
+  : new Pool({
+      host: "localhost",
+      port: 5432,
+      database: "disaster_watch",
+      user: "postgres",
+      password: process.env.DB_PASSWORD,
+    });
 
 pool
   .query("SELECT NOW()")
