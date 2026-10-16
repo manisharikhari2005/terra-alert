@@ -12,7 +12,7 @@ export default function AppShell({ children }) {
   };
 
   const closeSidebar = () => {
-    setIsSidebarOpen(false);
+    setIsSidebarOpen(false); 
   };
 
   return (

@@ -8,12 +8,12 @@ export default function Home() {
   return (
     <AppShell>
       <main className="mx-auto w-full max-w-[1600px] p-4 sm:p-5 lg:p-7">
-        <DashboardHeader />
+        <DashboardHeader /> 
 
         <div className="mt-5 grid items-stretch gap-4 2xl:grid-cols-[0.9fr_2.1fr]">
-          <div className="rounded-xl border border-(--border) bg-(--surface) p-4 transition-colors duration-200 hover:border-(--success)/40 sm:p-5">
+          <div className="rounded-xl border border-(--border) bg-(--surface) p-4 transition-colors duration-200 hover:border-(--success)/40 sm:p-5"> 
             <p className="text-sm text-(--muted-foreground)">
-              Global Monitoring Status
+              Global Monitoring Status 
             </p>
 
             <div className="mt-2 flex items-center gap-2">

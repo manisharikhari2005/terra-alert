@@ -8,7 +8,7 @@ export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();
 
   const workspaceLinks = [
-    { name: "Overview", href: "/" },
+    { name: "Overview", href: "/" }, 
     { name: "Live Map", href: "/map" },
     { name: "Near Me", href: "/near-me", icon: LocateFixed },
     { name: "Alerts", href: "/alerts" },
@@ -47,7 +47,7 @@ export default function Sidebar({ isOpen, onClose }) {
               </span>
             </div>
 
-            <p className="mt-1 pl-[18px] text-[9px] font-medium uppercase tracking-[0.12em] text-(--accent) sm:text-[10px] sm:tracking-[0.16em]">
+            <p className="mt-1 pl-4.5 text-[9px] font-medium uppercase tracking-[0.12em] text-(--accent) sm:text-[10px] sm:tracking-[0.16em]">
               Earthquake Monitoring
             </p>
           </Link>
