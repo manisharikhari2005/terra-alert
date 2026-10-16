@@ -1,4 +1,6 @@
-const API_BASE_URL = "/api/proxy";
+const API_BASE_URL = (
+  process.env.BACKEND_URL || "http://localhost:5000/api"
+).replace(/\/+$/, "");
 
 export function apiUrl(path = "") {
   const normalizedPath = path.replace(/^\/+/, "");
