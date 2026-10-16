@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function MobileHeader({ isOpen, onToggle }) {
   return (
     <header className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-(--border) bg-(--surface) px-4 lg:hidden">
-      <Link href="/" className="flex items-center gap-2"> 
+      <Link href="/" className="flex items-center gap-2">
         <span className="h-2.5 w-2.5 rounded-full bg-(--accent)" />
 
         <div>
@@ -17,7 +17,7 @@ export default function MobileHeader({ isOpen, onToggle }) {
           <p className="text-[8px] font-medium uppercase tracking-[0.18em] text-(--accent)">
             Earthquake Monitoring Dashboard
           </p>
-        </div> 
+        </div>
       </Link>
 
       <button
